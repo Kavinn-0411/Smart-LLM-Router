@@ -14,6 +14,7 @@ from openai import OpenAI
 from config import MODELS
 
 TEST_PROMPTS = {
+    "phi3-mini": "What is the capital of France? Answer in one sentence.",
     "qwen-coder": "Write a Python function that checks if a number is prime.",
     "llama-8b": "Explain the difference between TCP and UDP in simple terms.",
 }

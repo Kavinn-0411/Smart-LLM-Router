@@ -10,7 +10,7 @@ MODELS = {
         "port": 8001,
         "purpose": "Simple tasks, code generation, debugging, classifier",
         "quantization": "awq",
-        "max_model_len": 4096,
+        "max_model_len": 2048,
         "gpu_memory_utilization": 0.40,
     },
     "llama-8b": {
@@ -19,7 +19,7 @@ MODELS = {
         "port": 8002,
         "purpose": "Complex reasoning, analysis, fallback",
         "quantization": "awq",
-        "max_model_len": 2048,
+        "max_model_len": 3024,
         "gpu_memory_utilization": 0.55,
     },
 }

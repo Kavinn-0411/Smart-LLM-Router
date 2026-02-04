@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import MODELS, VLLM_COMMON_ARGS
 
 PID_FILE = Path(__file__).resolve().parent.parent / ".model_pids.json"
+_OPEN_LOG_HANDLES = []
 
 
 def build_vllm_command(key: str, cfg: dict) -> list[str]:
@@ -59,17 +60,21 @@ def start_model(key: str):
     log_dir.mkdir(exist_ok=True)
     log_file = log_dir / f"{key}.log"
 
-    with open(log_file, "w") as lf:
-        proc = subprocess.Popen(
-            cmd,
-            stdout=lf,
-            stderr=subprocess.STDOUT,
-            preexec_fn=os.setsid,
-        )
+    lf = open(log_file, "w", buffering=1)
+    proc = subprocess.Popen(
+        cmd,
+        stdout=lf,
+        stderr=subprocess.STDOUT,
+        preexec_fn=os.setsid,
+    )
 
     pids = load_pids()
     pids[key] = proc.pid
     save_pids(pids)
+
+    # Keep file handle alive so the subprocess can keep writing
+    _OPEN_LOG_HANDLES.append(lf)
+
     print(f"    PID: {proc.pid} | Log: {log_file}")
     return proc.pid
 
