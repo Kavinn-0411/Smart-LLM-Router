@@ -2,12 +2,17 @@
 Query classifier that routes user prompts to the appropriate model.
 
 Uses Qwen Coder (the lighter model) to classify queries into SIMPLE vs COMPLEX,
-then maps to the correct model key.
+then maps to the correct model key. Calls vLLM through LangChain ChatOpenAI
+(see router.langchain_llms) instead of the raw OpenAI SDK.
 """
 
 import time
-from openai import OpenAI
-from config import MODELS, MODEL_TIERS
+
+from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
+
+from config import MODELS
+from router.langchain_llms import get_classifier_llm
 
 CLASSIFIER_MODEL = "qwen-coder"
 
@@ -25,12 +30,7 @@ CATEGORY_TO_MODEL = {
 }
 
 
-def get_classifier_client() -> OpenAI:
-    cfg = MODELS[CLASSIFIER_MODEL]
-    return OpenAI(base_url=f"http://localhost:{cfg['port']}/v1", api_key="unused")
-
-
-def classify(query: str, client: OpenAI | None = None) -> dict:
+def classify(query: str, llm: ChatOpenAI | None = None) -> dict:
     """
     Classify a query and return the target model key along with metadata.
 
@@ -43,21 +43,16 @@ def classify(query: str, client: OpenAI | None = None) -> dict:
             "raw_response": str,     # raw LLM output (for debugging)
         }
     """
-    if client is None:
-        client = get_classifier_client()
+    if llm is None:
+        llm = get_classifier_llm()
 
     prompt = CLASSIFICATION_PROMPT.format(query=query)
 
     start = time.perf_counter()
-    response = client.chat.completions.create(
-        model=CLASSIFIER_MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=10,
-        temperature=0.0,
-    )
+    msg = llm.invoke([HumanMessage(content=prompt)])
     elapsed_ms = (time.perf_counter() - start) * 1000
 
-    raw = response.choices[0].message.content.strip().upper()
+    raw = (msg.content or "").strip().upper()
 
     # Parse — be lenient with model output
     if "COMPLEX" in raw:

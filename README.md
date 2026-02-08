@@ -64,12 +64,34 @@ python scripts/eval_classifier.py
 
 Evaluation output is written under `results/` (e.g. `classifier_eval.json`).
 
+### LangChain router (tools + agent + memory + quality)
+
+Install LangChain packages (also listed in `requirements.txt`):
+
+```bash
+pip install -r requirements.txt
+```
+
+- **`router/langchain_llms.py`** — `ChatOpenAI` instances aimed at each local vLLM port (replaces ad-hoc OpenAI clients for routing paths).
+- **`router/model_tools.py`** — one `@tool` per backend model (`qwen_coder`, `llama_8b`).
+- **`router/agent_service.py`** — `create_tool_calling_agent` + `AgentExecutor` + `ConversationBufferMemory`; after each answer, an eval chain scores it and can **escalate** to Llama if the score is below `QUALITY_THRESHOLD` in `config.py`.
+- **`classifier.py`** — still exposes `classify()` / `get_classifier_llm()`, now backed by LangChain.
+
+Try the agent (both vLLM servers must be up; the **router** model must support OpenAI-style **tool calling** — Qwen 2.5 Coder on recent vLLM usually does):
+
+```bash
+python -m router.agent_service
+```
+
+For FastAPI/Postgres/Docker, import `run_routed_query` and pass a **session-scoped** `ConversationBufferMemory` instance per client.
+
 ## Repository layout
 
 | Path | Purpose |
 |------|---------|
 | `config.py` | Model IDs, ports, vLLM memory settings |
-| `classifier.py` | `classify(query)` → category + target model |
+| `classifier.py` | `classify(query)` → category + target model (LangChain `ChatOpenAI`) |
+| `router/` | LangChain tools, `AgentExecutor`, memory, quality eval + escalation |
 | `test_queries.json` | Hand-labeled queries for classifier eval |
 | `scripts/serve_models.py` | Launch vLLM processes, logs under `logs/` |
 | `scripts/setup_wsl.sh` | venv + pip install |
@@ -80,4 +102,4 @@ Evaluation output is written under `results/` (e.g. `classifier_eval.json`).
 
 ## License
 
-Model weights are subject to their respective Hugging Face / Meta / Qwen licenses. Add a project license if you open-source this repo.
+Model weights are subject to their respective Hugging Face / Meta / Qwen licenses.

@@ -10,8 +10,8 @@ MODELS = {
         "port": 8001,
         "purpose": "Simple tasks, code generation, debugging, classifier",
         "quantization": "awq",
-        "max_model_len": 2048,
-        "gpu_memory_utilization": 0.40,
+        "max_model_len": 1000,
+        "gpu_memory_utilization": 0.25,
     },
     "llama-8b": {
         "name": "Llama 3.1 8B",
@@ -19,8 +19,8 @@ MODELS = {
         "port": 8002,
         "purpose": "Complex reasoning, analysis, fallback",
         "quantization": "awq",
-        "max_model_len": 3024,
-        "gpu_memory_utilization": 0.55,
+        "max_model_len": 600,
+        "gpu_memory_utilization": 0.75,
     },
 }
 
@@ -30,3 +30,10 @@ VLLM_COMMON_ARGS = {
     "dtype": "float16",
     "enforce_eager": True,
 }
+
+# Router / quality escalation (used by router/agent_service.py)
+ROUTER_LLM_KEY = "qwen-coder"
+QUALITY_THRESHOLD = 4
+QUALITY_SCORE_MIN = 1
+QUALITY_SCORE_MAX = 5
+AGENT_MAX_ITERATIONS = 6

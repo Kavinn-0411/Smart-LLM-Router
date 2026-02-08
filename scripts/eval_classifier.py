@@ -17,7 +17,7 @@ from statistics import mean, median, quantiles
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from classifier import classify, get_classifier_client
+from classifier import classify, get_classifier_llm
 from config import MODELS
 
 DATASET_PATH = Path(__file__).resolve().parent.parent / "test_queries.json"
@@ -30,7 +30,7 @@ def load_dataset() -> list[dict]:
 
 def run_eval():
     dataset = load_dataset()
-    client = get_classifier_client()
+    llm = get_classifier_llm()
 
     print("Smart LLM Router — Classifier Evaluation")
     print("=" * 70)
@@ -47,7 +47,7 @@ def run_eval():
         query = item["query"]
         expected = item["expected"]
 
-        result = classify(query, client=client)
+        result = classify(query, llm=llm)
         predicted = result["category"]
         match = predicted == expected
         if match:

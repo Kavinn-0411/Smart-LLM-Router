@@ -2,3 +2,9 @@ vllm>=0.7.0
 openai
 requests
 tabulate
+
+# LangChain (routing agent, local OpenAI-compatible vLLM)
+langchain>=0.3,<0.4
+langchain-core>=0.3,<0.4
+langchain-openai>=0.2,<0.3
+langchain-community>=0.3,<0.4
