@@ -22,13 +22,13 @@ from statistics import mean, median, quantiles
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from config import MODELS, QUALITY_THRESHOLD
-from router.agent_service import RouteResult, run_routed_query
+from router.graph_router import RouteResult, run_routed_query
 
 DATASET_PATH = Path(__file__).resolve().parent.parent / "test_queries.json"
 
 EXPECTED_TOOL = {
-    "SIMPLE": "qwen_coder",
-    "COMPLEX": "llama_8b",
+    "SIMPLE": "qwen-coder",
+    "COMPLEX": "llama-8b",
 }
 
 

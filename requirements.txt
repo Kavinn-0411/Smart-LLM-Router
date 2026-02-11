@@ -3,8 +3,9 @@ openai
 requests
 tabulate
 
-# LangChain (routing agent, local OpenAI-compatible vLLM)
+# LangChain + LangGraph (state-graph router, local OpenAI-compatible vLLM)
 langchain>=0.3,<0.4
 langchain-core>=0.3,<0.4
 langchain-openai>=0.2,<0.3
 langchain-community>=0.3,<0.4
+langgraph>=1.1,<2.0
