@@ -80,4 +80,4 @@ Evaluation output is written under `results/` (e.g. `classifier_eval.json`).
 
 ## License
 
-Model weights are subject to their respective Hugging Face / Meta / Qwen licenses. Add a project license if you open-source this repo.
+Model weights are subject to their respective Hugging Face / Meta / Qwen licenses.
